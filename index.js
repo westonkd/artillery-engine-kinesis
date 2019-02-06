@@ -6,6 +6,7 @@ const Kinesis = require('aws-sdk/clients/kinesis');
 const debug = require('debug')('engine:kinesis');
 const A = require('async');
 const _ = require('lodash');
+const engineUtil = require('artillery-core/lib/engine_util');
 
 function KinesisEngine (script, ee, helpers) {
   this.script = script;
@@ -60,7 +61,7 @@ KinesisEngine.prototype.step = function step (rs, ee) {
             : String(rs.putRecord.data);
 
       const params = {
-        Data: data,
+        Data: engineUtil.template(data, context),
         PartitionKey: rs.putRecord.partitionKey,
         StreamName: rs.putRecord.streamName || self.script.config.target,
         ExplicitHashKey: rs.putRecord.explicitHashKey,
